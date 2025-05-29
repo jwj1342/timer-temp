@@ -1,9 +1,9 @@
 {
   "name": "timer",
   "version": "1.0.0",
-  "description": "",
+  "description": "案例研讨计时器 - 一个专业的双人计时应用",
   "license": "ISC",
-  "author": "",
+  "author": "jwj",
   "type": "commonjs",
   "main": "main.js",
   "scripts": {
