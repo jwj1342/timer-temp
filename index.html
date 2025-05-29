@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AB角辩论计时器</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- 顶部文本展示框 -->
+        <div class="status-display">
+            <h1 id="statusText">AB角辩论计时器 - 准备开始</h1>
+        </div>
+
+        <!-- 主计时器区域 -->
+        <div class="timer-section">
+            <!-- A角计时器 -->
+            <div class="timer-container left">
+                <div class="role-label">A角</div>
+                <div class="timer-display" id="timerA">04:00</div>
+                <div class="timer-controls">
+                    <button class="control-btn start-btn" id="startA">开始</button>
+                    <button class="control-btn pause-btn" id="pauseA">暂停</button>
+                    <button class="control-btn reset-btn" id="resetA">重置</button>
+                </div>
+                <div class="timer-status" id="statusA">等待中</div>
+            </div>
+
+            <!-- 中间分隔符 -->
+            <div class="separator">
+                <div class="vs-text">VS</div>
+            </div>
+
+            <!-- B角计时器 -->
+            <div class="timer-container right">
+                <div class="role-label">B角</div>
+                <div class="timer-display" id="timerB">02:00</div>
+                <div class="timer-controls">
+                    <button class="control-btn start-btn" id="startB">开始</button>
+                    <button class="control-btn pause-btn" id="pauseB">暂停</button>
+                    <button class="control-btn reset-btn" id="resetB">重置</button>
+                </div>
+                <div class="timer-status" id="statusB">等待中</div>
+            </div>
+        </div>
+
+        <!-- 游戏控制区域 -->
+        <div class="game-controls">
+            <button class="main-control-btn start-game" id="startGame">开始辩论</button>
+            <button class="main-control-btn reset-game" id="resetGame">重置游戏</button>
+            <button class="main-control-btn switch-turn" id="switchTurn" disabled>切换发言者</button>
+            <button class="main-control-btn rules-toggle" id="rulesToggle">查看规则</button>
+        </div>
+
+        <!-- 规则说明 -->
+        <div class="rules-section hidden" id="rulesSection">
+            <h3>游戏规则</h3>
+            <ul>
+                <li>B角先提问，累计计时2分钟</li>
+                <li>A角回答，从4分钟开始倒计时</li>
+                <li>来回提问回答，直到双方时间用完</li>
+                <li>时间结束时会播放提示音</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 音频元素 -->
+    <audio id="timeUpSound" preload="auto">
+        <source
+            src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmIbBTuZ4Oy+cyQGl"
+            ) preload="auto">
+    </audio>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

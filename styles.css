@@ -1,0 +1,475 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Microsoft YaHei', 'Arial', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+    color: white;
+    overflow-x: hidden;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.2) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
+}
+
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 30px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+/* 顶部状态显示 */
+.status-display {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(20px);
+    border-radius: 25px;
+    padding: 30px 60px;
+    margin-bottom: 50px;
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    text-align: center;
+    box-shadow: 
+        0 15px 50px rgba(31, 38, 135, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.status-display::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transition: left 0.5s;
+}
+
+.status-display:hover::before {
+    left: 100%;
+}
+
+.status-display h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(45deg, #fff, #e0e7ff, #fff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+    letter-spacing: 2px;
+    position: relative;
+    z-index: 1;
+}
+
+/* 计时器区域 */
+.timer-section {
+    display: flex;
+    align-items: center;
+    gap: 80px;
+    margin-bottom: 50px;
+    perspective: 1000px;
+}
+
+.timer-container {
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(20px);
+    border-radius: 25px;
+    padding: 40px 30px;
+    text-align: center;
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 
+        0 20px 60px rgba(31, 38, 135, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2),
+        0 0 40px rgba(255, 255, 255, 0.1);
+    transition: all 0.4s ease;
+    min-width: 360px;
+    position: relative;
+    overflow: hidden;
+}
+
+.timer-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%, rgba(255, 255, 255, 0.05) 100%);
+    border-radius: 25px;
+    pointer-events: none;
+}
+
+.timer-container:hover {
+    transform: translateY(-8px) rotateX(5deg);
+    box-shadow: 
+        0 25px 80px rgba(31, 38, 135, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3),
+        0 0 60px rgba(255, 255, 255, 0.15);
+}
+
+.timer-container.active {
+    background: rgba(46, 204, 113, 0.25);
+    border: 3px solid #2ecc71;
+    box-shadow: 
+        0 0 50px rgba(46, 204, 113, 0.4),
+        0 20px 60px rgba(31, 38, 135, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+.timer-container.warning {
+    background: rgba(241, 196, 15, 0.25);
+    border: 3px solid #f1c40f;
+    box-shadow: 
+        0 0 50px rgba(241, 196, 15, 0.4),
+        0 20px 60px rgba(31, 38, 135, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.timer-container.danger {
+    background: rgba(231, 76, 60, 0.25);
+    border: 3px solid #e74c3c;
+    box-shadow: 
+        0 0 50px rgba(231, 76, 60, 0.4),
+        0 20px 60px rgba(31, 38, 135, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    animation: pulse 1s infinite, shake 0.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+    100% { transform: scale(1); }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    75% { transform: translateX(2px); }
+}
+
+.role-label {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    background: linear-gradient(45deg, #fff, #e0e7ff, #fff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+    letter-spacing: 3px;
+    position: relative;
+    z-index: 2;
+}
+
+.timer-display {
+    font-size: 6.5rem;
+    font-weight: bold;
+    font-family: 'Courier New', monospace;
+    margin-bottom: 25px;
+    text-shadow: 
+        0 0 30px rgba(255, 255, 255, 0.5),
+        0 0 60px rgba(255, 255, 255, 0.3),
+        0 0 90px rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    position: relative;
+    z-index: 2;
+    transition: all 0.3s ease;
+    line-height: 1;
+}
+
+.timer-display:hover {
+    transform: scale(1.05);
+    text-shadow: 
+        0 0 40px rgba(255, 255, 255, 0.7),
+        0 0 80px rgba(255, 255, 255, 0.5),
+        0 0 120px rgba(255, 255, 255, 0.3);
+}
+
+.timer-controls {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.control-btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    z-index: 2;
+}
+
+.control-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.control-btn:hover::before {
+    left: 100%;
+}
+
+.start-btn {
+    background: linear-gradient(45deg, #2ecc71, #27ae60);
+    color: white;
+}
+
+.pause-btn {
+    background: linear-gradient(45deg, #f39c12, #e67e22);
+    color: white;
+}
+
+.reset-btn {
+    background: linear-gradient(45deg, #e74c3c, #c0392b);
+    color: white;
+}
+
+.control-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.control-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.timer-status {
+    font-size: 1rem;
+    opacity: 0.8;
+    font-weight: 500;
+}
+
+/* 中间分隔符 */
+.separator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 120px;
+    position: relative;
+}
+
+.vs-text {
+    font-size: 3.5rem;
+    font-weight: bold;
+    background: linear-gradient(45deg, #fff, #e0e7ff, #fff, #e0e7ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    background-size: 200% 200%;
+    animation: gradient-shift 3s ease-in-out infinite;
+    text-shadow: 
+        0 0 30px rgba(255, 255, 255, 0.5),
+        0 0 60px rgba(255, 255, 255, 0.3);
+    letter-spacing: 5px;
+    position: relative;
+    z-index: 2;
+}
+
+@keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+.vs-text::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+    border-radius: 50%;
+    z-index: -1;
+    animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+    50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.8; }
+}
+
+/* 游戏控制区域 */
+.game-controls {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.main-control-btn {
+    padding: 18px 35px;
+    border: none;
+    border-radius: 18px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.4s ease;
+    backdrop-filter: blur(15px);
+    border: 2px solid rgba(255, 255, 255, 0.25);
+    color: white;
+    min-width: 180px;
+    position: relative;
+    overflow: hidden;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    letter-spacing: 1px;
+}
+
+.main-control-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+    transition: left 0.6s;
+}
+
+.main-control-btn:hover::before {
+    left: 100%;
+}
+
+.main-control-btn:hover:not(:disabled) {
+    transform: translateY(-4px) scale(1.05);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
+}
+
+.start-game {
+    background: linear-gradient(45deg, #3498db, #2980b9);
+}
+
+.reset-game {
+    background: linear-gradient(45deg, #95a5a6, #7f8c8d);
+}
+
+.switch-turn {
+    background: linear-gradient(45deg, #9b59b6, #8e44ad);
+}
+
+.main-control-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* 规则说明 */
+.rules-section {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+    max-width: 600px;
+    text-align: left;
+}
+
+.rules-section h3 {
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+    background: linear-gradient(45deg, #fff, #e0e7ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.rules-section ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.rules-section li {
+    margin-bottom: 8px;
+    padding-left: 20px;
+    position: relative;
+    opacity: 0.9;
+}
+
+.rules-section li::before {
+    content: "▶";
+    position: absolute;
+    left: 0;
+    color: #3498db;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .timer-section {
+        flex-direction: column;
+        gap: 30px;
+    }
+    
+    .separator {
+        transform: rotate(90deg);
+        height: 50px;
+    }
+    
+    .vs-text {
+        font-size: 2rem;
+    }
+    
+    .timer-display {
+        font-size: 4.5rem;
+    }
+    
+    .status-display h1 {
+        font-size: 1.5rem;
+    }
+    
+    .game-controls {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .main-control-btn {
+        min-width: 200px;
+    }
+    
+    .timer-container {
+        min-width: 300px;
+        padding: 30px 20px;
+    }
+} 
