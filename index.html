@@ -4,66 +4,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AB角计时器</title>
+    <title>案例研讨计时器</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
     <div class="container">
-        <!-- 顶部文本展示框 -->
+        <!-- 顶部状态显示 -->
         <div class="status-display">
-            <h1 id="statusText">AB角辩论计时器 - 准备开始</h1>
+            <h1 id="statusText">案例研讨计时器 - 准备开始</h1>
+            <div class="phase-info" id="phaseInfo">等待开始比赛</div>
+        </div>
+
+        <!-- 阶段进度条 -->
+        <div class="phase-progress">
+            <div class="phase-step" id="phase1">
+                <div class="phase-number">1</div>
+                <div class="phase-label">B问A答</div>
+                <div class="phase-time">6分钟</div>
+            </div>
+            <div class="progress-line"></div>
+            <div class="phase-step" id="phase2">
+                <div class="phase-number">2</div>
+                <div class="phase-label">A问B答</div>
+                <div class="phase-time">6分钟</div>
+            </div>
         </div>
 
         <!-- 主计时器区域 -->
         <div class="timer-section">
             <!-- A角计时器 -->
-            <div class="timer-container left">
-                <div class="role-label">A角</div>
+            <div class="timer-container" id="containerA">
+                <div class="role-header">
+                    <div class="role-label">A角</div>
+                    <div class="role-action" id="roleActionA">等待中</div>
+                </div>
                 <div class="timer-display" id="timerA">04:00</div>
+                <div class="timer-info">
+                    <div class="time-type" id="timeTypeA">答题时间</div>
+                    <div class="time-limit" id="timeLimitA">4分钟</div>
+                </div>
                 <div class="timer-controls">
                     <button class="control-btn start-btn" id="startA">开始</button>
                     <button class="control-btn pause-btn" id="pauseA">暂停</button>
-                    <button class="control-btn reset-btn" id="resetA">重置</button>
                 </div>
-                <div class="timer-status" id="statusA">等待中</div>
+                <!-- <div class="timer-status" id="statusA">等待中</div> -->
             </div>
 
-            <!-- 中间分隔符 -->
-            <div class="separator">
+            <!-- 中间分隔符和控制区 -->
+            <div class="center-controls">
                 <div class="vs-text">VS</div>
+                <div class="main-controls">
+                    <button class="main-control-btn start-game" id="startGame">开始比赛</button>
+                    <button class="main-control-btn switch-turn" id="switchTurn" disabled>切换发言</button>
+                    <button class="main-control-btn next-phase" id="nextPhase" disabled>下一阶段</button>
+                    <button class="main-control-btn reset-game" id="resetGame">重置</button>
+                </div>
             </div>
 
             <!-- B角计时器 -->
-            <div class="timer-container right">
-                <div class="role-label">B角</div>
+            <div class="timer-container" id="containerB">
+                <div class="role-header">
+                    <div class="role-label">B角</div>
+                    <div class="role-action" id="roleActionB">等待中</div>
+                </div>
                 <div class="timer-display" id="timerB">02:00</div>
+                <div class="timer-info">
+                    <div class="time-type" id="timeTypeB">提问时间</div>
+                    <div class="time-limit" id="timeLimitB">2分钟</div>
+                </div>
                 <div class="timer-controls">
                     <button class="control-btn start-btn" id="startB">开始</button>
                     <button class="control-btn pause-btn" id="pauseB">暂停</button>
-                    <button class="control-btn reset-btn" id="resetB">重置</button>
                 </div>
-                <div class="timer-status" id="statusB">等待中</div>
+                <!-- <div class="timer-status" id="statusB">等待中</div> -->
             </div>
         </div>
 
-        <!-- 游戏控制区域 -->
-        <div class="game-controls">
-            <button class="main-control-btn start-game" id="startGame">开始辩论</button>
-            <button class="main-control-btn reset-game" id="resetGame">重置游戏</button>
-            <button class="main-control-btn switch-turn" id="switchTurn" disabled>切换发言者</button>
-            <button class="main-control-btn rules-toggle" id="rulesToggle">查看规则</button>
-        </div>
-
         <!-- 规则说明 -->
-        <div class="rules-section hidden" id="rulesSection">
-            <h3>游戏规则</h3>
-            <ul>
-                <li>B角先提问，累计计时2分钟</li>
-                <li>A角回答，从4分钟开始倒计时</li>
-                <li>来回提问回答，直到双方时间用完</li>
-                <li>时间结束时会播放提示音</li>
-            </ul>
+        <div class="rules-section">
+            <button class="rules-toggle" id="rulesToggle">查看规则 ▼</button>
+            <div class="rules-content hidden" id="rulesContent">
+                <h3>比赛规则</h3>
+                <div class="rules-grid">
+                    <div class="rule-item">
+                        <h4>第一阶段：B问A答（6分钟）</h4>
+                        <ul>
+                            <li>B角提问：累计2分钟</li>
+                            <li>A角回答：累计4分钟</li>
+                            <li>可以来回切换提问和回答</li>
+                        </ul>
+                    </div>
+                    <div class="rule-item">
+                        <h4>第二阶段：A问B答（6分钟）</h4>
+                        <ul>
+                            <li>A角提问：累计2分钟</li>
+                            <li>B角回答：累计4分钟</li>
+                            <li>可以来回切换提问和回答</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="rule-notes">
+                    <p><strong>注意事项：</strong></p>
+                    <ul>
+                        <li>每个阶段总时间为6分钟</li>
+                        <li>时间用完会播放提示音</li>
+                        <li>可以随时暂停和切换发言者</li>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 

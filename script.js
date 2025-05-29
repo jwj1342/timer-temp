@@ -1,71 +1,96 @@
-class DebateTimer {
+class CaseStudyTimer {
     constructor() {
         // 游戏状态
         this.gameState = {
             isGameStarted: false,
-            currentPlayer: null, // 'A' 或 'B'
-            isFirstRound: true,
-            gameEnded: false
+            currentPhase: 1, // 1: B问A答, 2: A问B答
+            currentSpeaker: null, // 当前发言者 'A' 或 'B'
+            gameEnded: false,
+            phaseEnded: false
         };
         
-        // 计时器状态
-        this.timers = {
-            A: {
-                time: 240, // 4分钟 = 240秒
-                initialTime: 240,
-                isRunning: false,
-                interval: null
+        // 阶段配置
+        this.phaseConfig = {
+            1: { // 第一阶段：B问A答
+                questioner: 'B',
+                answerer: 'A',
+                questionTime: 120, // 2分钟
+                answerTime: 240    // 4分钟
             },
-            B: {
-                time: 120, // 2分钟 = 120秒
-                initialTime: 120,
-                isRunning: false,
-                interval: null
+            2: { // 第二阶段：A问B答
+                questioner: 'A',
+                answerer: 'B',
+                questionTime: 120, // 2分钟
+                answerTime: 240    // 4分钟
             }
         };
         
-        // 初始化DOM元素
+        const initialConfig = this.phaseConfig[1];
+        // 计时器状态
+        this.timers = {
+            A: {
+                time: initialConfig.answerTime,
+                isRunning: false,
+                interval: null,
+                role: 'answerer', // 当前角色：questioner 或 answerer
+                totalTime: initialConfig.answerTime    // 总分配时间
+            },
+            B: {
+                time: initialConfig.questionTime,
+                isRunning: false,
+                interval: null,
+                role: 'questioner',
+                totalTime: initialConfig.questionTime
+            }
+        };
+        
+        // 初始化
         this.initElements();
-        // 绑定事件
         this.bindEvents();
-        // 更新显示
         this.updateDisplay();
-        // 创建提示音
         this.createNotificationSound();
     }
     
     initElements() {
         // 状态显示
         this.statusText = document.getElementById('statusText');
+        this.phaseInfo = document.getElementById('phaseInfo');
+        
+        // 阶段进度
+        this.phase1 = document.getElementById('phase1');
+        this.phase2 = document.getElementById('phase2');
         
         // 计时器显示
         this.timerA = document.getElementById('timerA');
         this.timerB = document.getElementById('timerB');
-        this.statusA = document.getElementById('statusA');
-        this.statusB = document.getElementById('statusB');
+        this.containerA = document.getElementById('containerA');
+        this.containerB = document.getElementById('containerB');
         
-        // 计时器容器
-        this.containerA = this.timerA.closest('.timer-container');
-        this.containerB = this.timerB.closest('.timer-container');
+        // 角色状态
+        this.roleActionA = document.getElementById('roleActionA');
+        this.roleActionB = document.getElementById('roleActionB');
+        this.timeTypeA = document.getElementById('timeTypeA');
+        this.timeTypeB = document.getElementById('timeTypeB');
+        this.timeLimitA = document.getElementById('timeLimitA');
+        this.timeLimitB = document.getElementById('timeLimitB');
         
-        // 个人控制按钮
+        // 控制按钮
         this.startA = document.getElementById('startA');
         this.pauseA = document.getElementById('pauseA');
-        this.resetA = document.getElementById('resetA');
         this.startB = document.getElementById('startB');
         this.pauseB = document.getElementById('pauseB');
-        this.resetB = document.getElementById('resetB');
         
-        // 游戏控制按钮
+        // 主控制按钮
         this.startGame = document.getElementById('startGame');
-        this.resetGame = document.getElementById('resetGame');
         this.switchTurn = document.getElementById('switchTurn');
+        this.nextPhase = document.getElementById('nextPhase');
+        this.resetGame = document.getElementById('resetGame');
+        
+        // 规则
         this.rulesToggle = document.getElementById('rulesToggle');
+        this.rulesContent = document.getElementById('rulesContent');
         
-        // 规则区域
-        this.rulesSection = document.getElementById('rulesSection');
-        
-        // 音频元素
+        // 音频
         this.timeUpSound = document.getElementById('timeUpSound');
     }
     
@@ -73,21 +98,21 @@ class DebateTimer {
         // 个人计时器控制
         this.startA.addEventListener('click', () => this.startTimer('A'));
         this.pauseA.addEventListener('click', () => this.pauseTimer('A'));
-        this.resetA.addEventListener('click', () => this.resetTimer('A'));
-        
         this.startB.addEventListener('click', () => this.startTimer('B'));
         this.pauseB.addEventListener('click', () => this.pauseTimer('B'));
-        this.resetB.addEventListener('click', () => this.resetTimer('B'));
         
-        // 游戏控制
-        this.startGame.addEventListener('click', () => this.startDebateGame());
-        this.resetGame.addEventListener('click', () => this.resetGame());
-        this.switchTurn.addEventListener('click', () => this.switchPlayer());
+        // 主控制
+        this.startGame.addEventListener('click', () => this.startGame_());
+        this.switchTurn.addEventListener('click', () => this.switchSpeaker());
+        this.nextPhase.addEventListener('click', () => this.nextPhase_());
+        this.resetGame.addEventListener('click', () => this.resetGame_());
+        
+        // 规则切换
         this.rulesToggle.addEventListener('click', () => this.toggleRules());
     }
     
     createNotificationSound() {
-        // 创建一个简单的beep音效
+        // 创建beep音效
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
         
         this.playBeep = () => {
@@ -115,61 +140,84 @@ class DebateTimer {
         return `${sign}${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
     
-    updateDisplay() {
-        // 更新计时器显示
-        this.timerA.textContent = this.formatTime(this.timers.A.time);
-        this.timerB.textContent = this.formatTime(this.timers.B.time);
+    updatePhaseDisplay() {
+        // 更新阶段进度显示
+        this.phase1.className = 'phase-step';
+        this.phase2.className = 'phase-step';
         
-        // 更新状态显示
-        this.statusA.textContent = this.getPlayerStatus('A');
-        this.statusB.textContent = this.getPlayerStatus('B');
-        
-        // 更新视觉状态
-        this.updateVisualStates();
-        
-        // 更新按钮状态
-        this.updateButtonStates();
+        if (this.gameState.currentPhase === 1) {
+            this.phase1.classList.add('active');
+        } else if (this.gameState.currentPhase === 2) {
+            this.phase1.classList.add('completed');
+            this.phase2.classList.add('active');
+        } else if (this.gameState.gameEnded) {
+            this.phase1.classList.add('completed');
+            this.phase2.classList.add('completed');
+        }
     }
     
-    getPlayerStatus(player) {
-        if (this.gameState.gameEnded) {
-            return this.timers[player].time <= 0 ? '时间用完' : '游戏结束';
-        }
-        
-        if (!this.gameState.isGameStarted) {
-            return '等待开始';
-        }
-        
-        if (this.gameState.currentPlayer === player) {
-            return this.timers[player].isRunning ? '发言中' : '准备发言';
-        } else {
-            return '等待中';
-        }
+    updateRoleDisplay() {
+        const currentPhaseConfig = this.phaseConfig[this.gameState.currentPhase];
+        if (!currentPhaseConfig) return;
+
+        ['A', 'B'].forEach(player => {
+            const isQuestionerForThisPlayerInThisPhase = (player === currentPhaseConfig.questioner);
+            
+            const timeType = isQuestionerForThisPlayerInThisPhase ? '提问时间' : '答题时间';
+            const timeLimit = isQuestionerForThisPlayerInThisPhase ? '2分钟' : '4分钟';
+
+            document.getElementById(`timeType${player}`).textContent = timeType;
+            document.getElementById(`timeLimit${player}`).textContent = timeLimit;
+            // .role and .totalTime are set by setupPhase/resetGame/constructor
+        });
+    }
+    
+    updateActionDisplay() {
+        ['A', 'B'].forEach(player => {
+            const actionElement = document.getElementById(`roleAction${player}`);
+            
+            if (!this.gameState.isGameStarted) {
+                actionElement.textContent = '等待中';
+            } else if (this.gameState.gameEnded) {
+                actionElement.textContent = '比赛结束';
+            } else if (this.gameState.phaseEnded) {
+                actionElement.textContent = '阶段结束';
+            } else {
+                if (this.gameState.currentSpeaker === player) {
+                    if (this.timers[player].isRunning) {
+                        actionElement.textContent = this.timers[player].role === 'questioner' ? '提问中' : '回答中';
+                    } else {
+                        actionElement.textContent = this.timers[player].role === 'questioner' ? '准备提问' : '准备回答';
+                    }
+                } else {
+                    actionElement.textContent = '等待中';
+                }
+            }
+        });
     }
     
     updateVisualStates() {
-        // 重置所有状态类
-        this.containerA.className = 'timer-container left';
-        this.containerB.className = 'timer-container right';
+        // 重置容器状态
+        this.containerA.className = 'timer-container';
+        this.containerB.className = 'timer-container';
         
         // 当前发言者高亮
-        if (this.gameState.currentPlayer === 'A' && this.timers.A.isRunning) {
-            this.containerA.classList.add('active');
-        } else if (this.gameState.currentPlayer === 'B' && this.timers.B.isRunning) {
-            this.containerB.classList.add('active');
+        if (this.gameState.currentSpeaker && this.timers[this.gameState.currentSpeaker].isRunning) {
+            const container = this.gameState.currentSpeaker === 'A' ? this.containerA : this.containerB;
+            container.classList.add('active');
         }
         
         // 时间警告状态
         ['A', 'B'].forEach(player => {
             const timeLeft = this.timers[player].time;
-            const totalTime = this.timers[player].initialTime;
+            const totalTime = this.timers[player].totalTime;
             const container = player === 'A' ? this.containerA : this.containerB;
             
             if (timeLeft <= 0) {
                 container.classList.add('danger');
-            } else if (timeLeft <= totalTime * 0.1) { // 最后10%时间
+            } else if (timeLeft <= totalTime * 0.1) { // 最后10%
                 container.classList.add('danger');
-            } else if (timeLeft <= totalTime * 0.2) { // 最后20%时间
+            } else if (timeLeft <= totalTime * 0.2) { // 最后20%
                 container.classList.add('warning');
             }
         });
@@ -178,191 +226,264 @@ class DebateTimer {
     updateButtonStates() {
         const gameStarted = this.gameState.isGameStarted;
         const gameEnded = this.gameState.gameEnded;
-        
-        // 游戏控制按钮
+        const phaseEnded = this.gameState.phaseEnded;
+    
         this.startGame.disabled = gameStarted;
-        this.switchTurn.disabled = !gameStarted || gameEnded;
+        this.switchTurn.disabled = !gameStarted || gameEnded || phaseEnded || this.gameState.currentSpeaker === null; // Disable switch if no one is speaking/paused
         
-        // 个人计时器按钮
+        this.nextPhase.disabled = !phaseEnded || gameEnded || (this.gameState.currentPhase === 1 && !phaseEnded);
+        if (this.gameState.currentPhase === 2 && phaseEnded && !gameEnded) {
+            this.nextPhase.textContent = '结束比赛';
+        } else {
+            this.nextPhase.textContent = '下一阶段';
+        }
+        if (gameEnded) {
+            this.nextPhase.disabled = true;
+        }
+    
         ['A', 'B'].forEach(player => {
-            const isCurrentPlayer = this.gameState.currentPlayer === player;
             const isRunning = this.timers[player].isRunning;
             const hasTime = this.timers[player].time > 0;
-            
+    
             const startBtn = player === 'A' ? this.startA : this.startB;
             const pauseBtn = player === 'A' ? this.pauseA : this.pauseB;
-            const resetBtn = player === 'A' ? this.resetA : this.resetB;
-            
-            if (gameStarted && !gameEnded) {
-                startBtn.disabled = !isCurrentPlayer || isRunning || !hasTime;
-                pauseBtn.disabled = !isCurrentPlayer || !isRunning;
-                resetBtn.disabled = isRunning;
+    
+            if (gameStarted && !gameEnded && !phaseEnded) {
+                if (this.gameState.currentSpeaker === null) { // No one is active, player whose role it is can start
+                    const currentPhaseConfig = this.phaseConfig[this.gameState.currentPhase];
+                    const isPlayerQuestioner = player === currentPhaseConfig.questioner;
+                    const isPlayerAnswerer = player === currentPhaseConfig.answerer;
+                    // Allow starting if it's their designated role in the current Q/A pair, or if just generally open.
+                    // Simplified: if currentSpeaker is null, anyone with time can start. User manages who *should* start.
+                    startBtn.disabled = isRunning || !hasTime || (this.timers.A.isRunning || this.timers.B.isRunning);
+                } else if (this.gameState.currentSpeaker === player) { // This player had paused themselves
+                    startBtn.disabled = isRunning || !hasTime; 
+                } else { // The other player is the currentSpeaker (active or paused)
+                    startBtn.disabled = true; 
+                }
+                pauseBtn.disabled = !(this.gameState.currentSpeaker === player && isRunning);
             } else {
-                startBtn.disabled = gameStarted || gameEnded;
-                pauseBtn.disabled = !isRunning;
-                resetBtn.disabled = isRunning;
+                startBtn.disabled = true;
+                pauseBtn.disabled = true;
             }
         });
     }
     
-    startTimer(player) {
-        if (this.timers[player].isRunning || this.timers[player].time <= 0) return;
+    updateStatusText() {
+        if (!this.gameState.isGameStarted) {
+            this.statusText.textContent = '案例研讨计时器 - 准备开始';
+            this.phaseInfo.textContent = '等待开始比赛';
+        } else if (this.gameState.gameEnded) {
+            this.statusText.textContent = '案例研讨计时器 - 比赛结束';
+            this.phaseInfo.textContent = '所有阶段已完成';
+        } else if (this.gameState.phaseEnded) {
+            this.statusText.textContent = `第${this.gameState.currentPhase}阶段已结束`;
+            this.phaseInfo.textContent = this.gameState.currentPhase < 2 ? '准备进入下一阶段' : '比赛即将结束';
+        } else {
+            const config = this.phaseConfig[this.gameState.currentPhase];
+            const questioner = config.questioner;
+            const answerer = config.answerer;
+            this.statusText.textContent = `第${this.gameState.currentPhase}阶段 - ${questioner}问${answerer}答`;
+            
+            if (this.gameState.currentSpeaker) {
+                const role = this.timers[this.gameState.currentSpeaker].role;
+                const action = role === 'questioner' ? '提问' : '回答';
+                this.phaseInfo.textContent = `当前：${this.gameState.currentSpeaker}角${action}`;
+            } else {
+                this.phaseInfo.textContent = '等待开始发言';
+            }
+        }
+    }
+    
+    updateDisplay() {
+        // 更新时间显示
+        this.timerA.textContent = this.formatTime(this.timers.A.time);
+        this.timerB.textContent = this.formatTime(this.timers.B.time);
         
+        // 更新各种状态
+        this.updatePhaseDisplay();
+        this.updateRoleDisplay();
+        this.updateActionDisplay();
+        this.updateVisualStates();
+        this.updateButtonStates();
+        this.updateStatusText();
+    }
+    
+    startTimer(player) {
+        // Cannot start if: already running, no time, or another player is paused (currentSpeaker is set to other player)
+        if (this.timers[player].isRunning || this.timers[player].time <= 0 || 
+            (this.gameState.currentSpeaker !== null && this.gameState.currentSpeaker !== player)) {
+            return;
+        }
+    
+        // Pause any other running timer before starting this one.
+        // (Should not be needed if currentSpeaker logic is correct, but good for safety)
+        this.pauseAllTimers(player); 
+    
+        this.gameState.currentSpeaker = player;
         this.timers[player].isRunning = true;
         this.timers[player].interval = setInterval(() => {
             this.timers[player].time--;
             this.updateDisplay();
-            
             if (this.timers[player].time <= 0) {
-                this.pauseTimer(player);
                 this.onTimeUp(player);
             }
         }, 1000);
-        
         this.updateDisplay();
     }
     
     pauseTimer(player) {
         if (!this.timers[player].isRunning) return;
-        
-        this.timers[player].isRunning = false;
         clearInterval(this.timers[player].interval);
+        this.timers[player].isRunning = false;
+        // this.gameState.currentSpeaker remains 'player' so they can resume.
         this.updateDisplay();
     }
     
-    resetTimer(player) {
-        this.pauseTimer(player);
-        this.timers[player].time = this.timers[player].initialTime;
-        this.updateDisplay();
+    pauseAllTimers(exceptPlayer = null) {
+        ['A', 'B'].forEach(p => {
+            if (p !== exceptPlayer && this.timers[p].isRunning) {
+                clearInterval(this.timers[p].interval);
+                this.timers[p].isRunning = false;
+                // If we are pausing an active speaker because 'exceptPlayer' is starting,
+                // currentSpeaker will be updated by startTimer.
+            }
+        });
     }
     
     onTimeUp(player) {
+        this.pauseTimer(player);
         this.playBeep();
-        this.statusText.textContent = `${player}角时间用完！`;
         
-        // 检查游戏是否结束
-        if (this.timers.A.time <= 0 && this.timers.B.time <= 0) {
-            this.endGame();
-        } else {
-            // 自动切换到另一个玩家（如果还有时间）
-            const otherPlayer = player === 'A' ? 'B' : 'A';
-            if (this.timers[otherPlayer].time > 0) {
-                setTimeout(() => {
-                    this.gameState.currentPlayer = otherPlayer;
-                    this.updateDisplay();
-                    this.updateStatusText();
-                }, 1000);
-            } else {
-                this.endGame();
-            }
+        // 检查是否需要结束阶段
+        this.checkPhaseEnd();
+    }
+    
+    checkPhaseEnd() {
+        const config = this.phaseConfig[this.gameState.currentPhase];
+        const questionerTime = this.timers[config.questioner].time;
+        const answererTime = this.timers[config.answerer].time;
+        
+        // 如果两方时间都用完，阶段结束
+        if (questionerTime <= 0 && answererTime <= 0) {
+            this.endPhase();
         }
     }
     
-    startDebateGame() {
+    endPhase() {
+        this.pauseAllTimers();
+        this.gameState.phaseEnded = true;
+        this.gameState.currentSpeaker = null; 
+        this.updateDisplay();
+    }
+    
+    startGame_() {
         this.gameState.isGameStarted = true;
-        this.gameState.currentPlayer = 'B'; // B角先开始提问
-        this.gameState.gameEnded = false;
-        this.gameState.isFirstRound = true;
-        
-        this.updateStatusText();
+        this.gameState.gameEnded = false; // Ensure gameEnded is false
+        this.gameState.currentPhase = 1;
+        this.setupPhase(1);
+        // currentSpeaker is set to null by setupPhase
         this.updateDisplay();
     }
     
-    switchPlayer() {
-        if (!this.gameState.isGameStarted || this.gameState.gameEnded) return;
+    setupPhase(phase) {
+        const config = this.phaseConfig[phase];
         
-        // 暂停当前玩家的计时器
-        if (this.gameState.currentPlayer) {
-            this.pauseTimer(this.gameState.currentPlayer);
-        }
+        this.gameState.currentPhase = phase;
+        this.gameState.phaseEnded = false;
+        this.gameState.currentSpeaker = null;
         
-        // 切换玩家
-        this.gameState.currentPlayer = this.gameState.currentPlayer === 'A' ? 'B' : 'A';
-        this.gameState.isFirstRound = false;
+        // Set roles and times based on WHO is questioner/answerer in this phase
+        this.timers[config.questioner].time = config.questionTime;
+        this.timers[config.questioner].totalTime = config.questionTime;
+        this.timers[config.questioner].role = 'questioner';
+
+        this.timers[config.answerer].time = config.answerTime;
+        this.timers[config.answerer].totalTime = config.answerTime;
+        this.timers[config.answerer].role = 'answerer';
         
-        this.updateStatusText();
+        this.pauseAllTimers();
         this.updateDisplay();
     }
     
-    updateStatusText() {
-        if (this.gameState.gameEnded) {
-            this.statusText.textContent = '辩论结束';
+    switchSpeaker() {
+        if (this.gameState.gameEnded || this.gameState.phaseEnded) return;
+    
+        const speakerWhoPaused = this.gameState.currentSpeaker;
+        if (speakerWhoPaused && this.timers[speakerWhoPaused].isRunning) {
+             this.pauseTimer(speakerWhoPaused); // Pauses them, currentSpeaker remains their ID
+        }
+        // Explicitly open the floor
+        this.gameState.currentSpeaker = null; 
+        this.updateDisplay();
+    }
+    
+    nextPhase_() {
+        if (this.gameState.currentPhase >= 2) {
+            this.endGame();
             return;
         }
         
-        if (!this.gameState.isGameStarted) {
-            this.statusText.textContent = 'AB角辩论计时器 - 准备开始';
-            return;
-        }
-        
-        const currentPlayer = this.gameState.currentPlayer;
-        if (currentPlayer === 'B' && this.gameState.isFirstRound) {
-            this.statusText.textContent = 'B角提问阶段 - 累计计时2分钟';
-        } else if (currentPlayer === 'A') {
-            this.statusText.textContent = 'A角回答阶段 - 倒计时4分钟';
-        } else if (currentPlayer === 'B') {
-            this.statusText.textContent = 'B角提问阶段 - 累计计时2分钟';
-        }
+        this.setupPhase(this.gameState.currentPhase + 1);
     }
     
     endGame() {
+        this.pauseAllTimers();
         this.gameState.gameEnded = true;
-        this.gameState.currentPlayer = null;
-        
-        // 停止所有计时器
-        this.pauseTimer('A');
-        this.pauseTimer('B');
-        
-        this.statusText.textContent = '辩论结束！';
-        this.playBeep();
+        this.gameState.currentSpeaker = null;
         this.updateDisplay();
     }
     
-    resetGame() {
-        // 停止所有计时器
-        this.pauseTimer('A');
-        this.pauseTimer('B');
+    resetGame_() {
+        this.pauseAllTimers();
         
-        // 重置游戏状态
         this.gameState = {
             isGameStarted: false,
-            currentPlayer: null,
-            isFirstRound: true,
-            gameEnded: false
+            currentPhase: 1,
+            currentSpeaker: null,
+            gameEnded: false,
+            phaseEnded: false
         };
         
-        // 重置计时器
-        this.timers.A.time = this.timers.A.initialTime;
-        this.timers.B.time = this.timers.B.initialTime;
+        const phase1Config = this.phaseConfig[1];
+        this.timers[phase1Config.answerer].time = phase1Config.answerTime;
+        this.timers[phase1Config.answerer].totalTime = phase1Config.answerTime;
+        this.timers[phase1Config.answerer].role = 'answerer'; // A is answerer
+
+        this.timers[phase1Config.questioner].time = phase1Config.questionTime;
+        this.timers[phase1Config.questioner].totalTime = phase1Config.questionTime;
+        this.timers[phase1Config.questioner].role = 'questioner'; // B is questioner
         
-        this.updateStatusText();
         this.updateDisplay();
     }
     
     toggleRules() {
-        const isHidden = this.rulesSection.classList.contains('hidden');
+        const isHidden = this.rulesContent.classList.contains('hidden');
         
         if (isHidden) {
-            this.rulesSection.classList.remove('hidden');
-            this.rulesSection.classList.add('show');
-            this.rulesToggle.textContent = '隐藏规则';
+            this.rulesContent.classList.remove('hidden');
+            this.rulesToggle.textContent = '隐藏规则 ▲';
         } else {
-            this.rulesSection.classList.remove('show');
-            this.rulesSection.classList.add('hidden');
-            this.rulesToggle.textContent = '查看规则';
+            this.rulesContent.classList.add('hidden');
+            this.rulesToggle.textContent = '查看规则 ▼';
         }
     }
 }
 
-// 页面加载完成后初始化计时器
+// 初始化计时器
 document.addEventListener('DOMContentLoaded', () => {
-    window.debateTimer = new DebateTimer();
+    window.caseStudyTimer = new CaseStudyTimer(); // Assign to window object
 });
 
 // 防止页面刷新时丢失音频上下文
 window.addEventListener('beforeunload', () => {
-    if (window.debateTimer) {
-        window.debateTimer.pauseTimer('A');
-        window.debateTimer.pauseTimer('B');
+    if (window.caseStudyTimer) { // Check if instance exists
+        // Pause timers if they are running
+        if (window.caseStudyTimer.timers.A.isRunning) {
+            window.caseStudyTimer.pauseTimer('A');
+        }
+        if (window.caseStudyTimer.timers.B.isRunning) {
+            window.caseStudyTimer.pauseTimer('B');
+        }
     }
 }); 
