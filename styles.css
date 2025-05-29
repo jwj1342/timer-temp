@@ -396,6 +396,10 @@ body::before {
 }
 
 /* 规则说明 */
+.rules-toggle {
+    background: linear-gradient(45deg, #34495e, #2c3e50);
+}
+
 .rules-section {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
@@ -405,6 +409,25 @@ body::before {
     box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
     max-width: 600px;
     text-align: left;
+    margin-top: 20px;
+    transition: all 0.5s ease;
+    transform-origin: top center;
+    overflow: hidden;
+}
+
+.rules-section.hidden {
+    opacity: 0;
+    transform: translateY(-20px) scaleY(0);
+    max-height: 0;
+    padding: 0 25px;
+    margin-top: 0;
+    pointer-events: none;
+}
+
+.rules-section.show {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+    max-height: 300px;
 }
 
 .rules-section h3 {

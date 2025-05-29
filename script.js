@@ -60,6 +60,10 @@ class DebateTimer {
         this.startGame = document.getElementById('startGame');
         this.resetGame = document.getElementById('resetGame');
         this.switchTurn = document.getElementById('switchTurn');
+        this.rulesToggle = document.getElementById('rulesToggle');
+        
+        // 规则区域
+        this.rulesSection = document.getElementById('rulesSection');
         
         // 音频元素
         this.timeUpSound = document.getElementById('timeUpSound');
@@ -79,6 +83,7 @@ class DebateTimer {
         this.startGame.addEventListener('click', () => this.startDebateGame());
         this.resetGame.addEventListener('click', () => this.resetGame());
         this.switchTurn.addEventListener('click', () => this.switchPlayer());
+        this.rulesToggle.addEventListener('click', () => this.toggleRules());
     }
     
     createNotificationSound() {
@@ -332,6 +337,20 @@ class DebateTimer {
         
         this.updateStatusText();
         this.updateDisplay();
+    }
+    
+    toggleRules() {
+        const isHidden = this.rulesSection.classList.contains('hidden');
+        
+        if (isHidden) {
+            this.rulesSection.classList.remove('hidden');
+            this.rulesSection.classList.add('show');
+            this.rulesToggle.textContent = '隐藏规则';
+        } else {
+            this.rulesSection.classList.remove('show');
+            this.rulesSection.classList.add('hidden');
+            this.rulesToggle.textContent = '查看规则';
+        }
     }
 }
 
