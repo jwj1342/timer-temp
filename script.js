@@ -231,14 +231,17 @@ class CaseStudyTimer {
         this.startGame.disabled = gameStarted;
         this.switchTurn.disabled = !gameStarted || gameEnded || phaseEnded || this.gameState.currentSpeaker === null; // Disable switch if no one is speaking/paused
         
-        this.nextPhase.disabled = !phaseEnded || gameEnded || (this.gameState.currentPhase === 1 && !phaseEnded);
-        if (this.gameState.currentPhase === 2 && phaseEnded && !gameEnded) {
+        // 允许在比赛进行中随时点击"下一阶段"来强制结束当前阶段
+        this.nextPhase.disabled = !gameStarted || gameEnded; 
+        
+        if (this.gameState.currentPhase === 2 && (phaseEnded || (!gameEnded && gameStarted))) { // 如果是第二阶段且已结束，或比赛开始但未结束（允许强制结束）
             this.nextPhase.textContent = '结束比赛';
         } else {
             this.nextPhase.textContent = '下一阶段';
         }
         if (gameEnded) {
-            this.nextPhase.disabled = true;
+            this.nextPhase.disabled = true; // 游戏结束后最终禁用
+            this.nextPhase.textContent = '下一阶段'; // 或者恢复默认文本
         }
     
         ['A', 'B'].forEach(player => {
@@ -419,6 +422,13 @@ class CaseStudyTimer {
     }
     
     nextPhase_() {
+        // 如果当前阶段尚未结束（例如，用户强制跳转），则先结束当前阶段
+        if (!this.gameState.phaseEnded && this.gameState.isGameStarted) {
+            this.endPhase(); 
+            // endPhase 会调用 updateDisplay，按钮状态会更新。
+            // 如果在endPhase后游戏应该结束（比如第二阶段结束），后续逻辑会处理。
+        }
+
         if (this.gameState.currentPhase >= 2) {
             this.endGame();
             return;
