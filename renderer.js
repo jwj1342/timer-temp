@@ -496,4 +496,4 @@ window.addEventListener('beforeunload', () => {
             window.caseStudyTimer.pauseTimer('B');
         }
     }
-}); 
+});

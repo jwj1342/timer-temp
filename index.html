@@ -2,8 +2,12 @@
 <html lang="zh-CN">
 
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'" />
+    <meta http-equiv="X-Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'" />
     <title>案例研讨计时器</title>
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -48,7 +52,6 @@
                     <button class="control-btn start-btn" id="startA">开始</button>
                     <button class="control-btn pause-btn" id="pauseA">暂停</button>
                 </div>
-                <!-- <div class="timer-status" id="statusA">等待中</div> -->
             </div>
 
             <!-- 中间分隔符和控制区 -->
@@ -77,7 +80,6 @@
                     <button class="control-btn start-btn" id="startB">开始</button>
                     <button class="control-btn pause-btn" id="pauseB">暂停</button>
                 </div>
-                <!-- <div class="timer-status" id="statusB">等待中</div> -->
             </div>
         </div>
 
@@ -123,7 +125,7 @@
             ) preload="auto">
     </audio>
 
-    <script src="script.js"></script>
+    <script src="./renderer.js"></script>
 </body>
 
 </html>
