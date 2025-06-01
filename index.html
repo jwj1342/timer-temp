@@ -9,123 +9,181 @@
     <meta http-equiv="X-Content-Security-Policy"
         content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'" />
     <title>案例研讨计时器</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="mode-selector.css">
 </head>
 
 <body>
     <div class="container">
-        <!-- 顶部状态显示 -->
-        <div class="status-display">
-            <h1 id="statusText">案例研讨计时器 - 准备开始</h1>
-            <div class="phase-info" id="phaseInfo">等待开始比赛</div>
+        <div class="header">
+            <h1>案例研讨计时器</h1>
+            <p>请选择计时模式</p>
         </div>
 
-        <!-- 阶段进度条 -->
-        <div class="phase-progress">
-            <div class="phase-step" id="phase1">
-                <div class="phase-number">1</div>
-                <div class="phase-label">B问A答</div>
-                <div class="phase-time">6分钟</div>
+        <div class="mode-selector">
+            <div class="mode-card" onclick="openMode('player-a')">
+                <div class="mode-icon">🅰️</div>
+                <h2>A选手模式</h2>
+                <p>显示A选手的计时器</p>
             </div>
-            <div class="progress-line"></div>
-            <div class="phase-step" id="phase2">
-                <div class="phase-number">2</div>
-                <div class="phase-label">A问B答</div>
-                <div class="phase-time">6分钟</div>
+
+            <div class="mode-card" onclick="openMode('player-b')">
+                <div class="mode-icon">🅱️</div>
+                <h2>B选手模式</h2>
+                <p>显示B选手的计时器</p>
+            </div>
+
+            <div class="mode-card" onclick="openMode('interview')">
+                <div class="mode-icon">👨‍🏫</div>
+                <h2>谈心谈话模式</h2>
+                <p>4分钟谈话 + 2分钟总结</p>
             </div>
         </div>
 
-        <!-- 主计时器区域 -->
-        <div class="timer-section">
-            <!-- A角计时器 -->
-            <div class="timer-container" id="containerA">
-                <div class="role-header">
-                    <div class="role-label">A角</div>
-                    <div class="role-action" id="roleActionA">等待中</div>
-                </div>
-                <div class="timer-display" id="timerA">04:00</div>
-                <div class="timer-info">
-                    <div class="time-type" id="timeTypeA">答题时间</div>
-                    <div class="time-limit" id="timeLimitA">4分钟</div>
-                </div>
-                <div class="timer-controls">
-                    <button class="control-btn start-btn" id="startA">开始</button>
-                    <button class="control-btn pause-btn" id="pauseA">暂停</button>
-                </div>
-            </div>
+        <!-- 多窗口控制 -->
+        <div class="multi-window-section">
+            <h2>多窗口模式</h2>
+            <p>为A/B选手开启独立的计时器窗口</p>
 
-            <!-- 中间分隔符和控制区 -->
-            <div class="center-controls">
-                <div class="vs-text">VS</div>
-                <div class="main-controls">
-                    <button class="main-control-btn start-game" id="startGame">开始比赛</button>
-                    <button class="main-control-btn switch-turn" id="switchTurn" disabled>切换发言</button>
-                    <button class="main-control-btn next-phase" id="nextPhase" disabled>下一阶段</button>
-                    <button class="main-control-btn reset-game" id="resetGame">重置</button>
+            <div class="multi-window-controls">
+                <div class="window-card" onclick="openNewWindow('player-a')">
+                    <div class="window-icon">🖥️</div>
+                    <h3>开启A选手窗口</h3>
+                    <p>在新窗口中打开A选手计时器</p>
                 </div>
-            </div>
 
-            <!-- B角计时器 -->
-            <div class="timer-container" id="containerB">
-                <div class="role-header">
-                    <div class="role-label">B角</div>
-                    <div class="role-action" id="roleActionB">等待中</div>
+                <div class="window-card" onclick="openNewWindow('player-b')">
+                    <div class="window-icon">🖥️</div>
+                    <h3>开启B选手窗口</h3>
+                    <p>在新窗口中打开B选手计时器</p>
                 </div>
-                <div class="timer-display" id="timerB">02:00</div>
-                <div class="timer-info">
-                    <div class="time-type" id="timeTypeB">提问时间</div>
-                    <div class="time-limit" id="timeLimitB">2分钟</div>
+
+                <div class="window-card special" onclick="openBothWindows()">
+                    <div class="window-icon">🖥️🖥️</div>
+                    <h3>同时开启A/B窗口</h3>
+                    <p>自动排列两个选手的计时器窗口</p>
                 </div>
-                <div class="timer-controls">
-                    <button class="control-btn start-btn" id="startB">开始</button>
-                    <button class="control-btn pause-btn" id="pauseB">暂停</button>
+
+                <div class="window-card" onclick="openNewWindow('interview')">
+                    <div class="window-icon">🖥️</div>
+                    <h3>开启谈心谈话窗口</h3>
+                    <p>在新窗口中打开谈心谈话计时器</p>
                 </div>
             </div>
         </div>
 
-        <!-- 规则说明 -->
         <div class="rules-section">
-            <button class="rules-toggle" id="rulesToggle">查看规则 ▼</button>
+            <button class="rules-toggle" onclick="toggleRules()">查看规则 ▼</button>
             <div class="rules-content hidden" id="rulesContent">
                 <h3>比赛规则</h3>
                 <div class="rules-grid">
                     <div class="rule-item">
-                        <h4>第一阶段：B问A答（6分钟）</h4>
+                        <h4>案例研讨规则</h4>
                         <ul>
-                            <li>B角提问：累计2分钟</li>
-                            <li>A角回答：累计4分钟</li>
-                            <li>可以来回切换提问和回答</li>
+                            <li>每名选手限时6分钟</li>
+                            <li>提问时间：2分钟</li>
+                            <li>作答时间：4分钟</li>
+                            <li>分别计时，可以切换</li>
                         </ul>
                     </div>
                     <div class="rule-item">
-                        <h4>第二阶段：A问B答（6分钟）</h4>
+                        <h4>比赛流程</h4>
                         <ul>
-                            <li>A角提问：累计2分钟</li>
-                            <li>B角回答：累计4分钟</li>
-                            <li>可以来回切换提问和回答</li>
+                            <li>第一组：A1问B1答，B1问A1答</li>
+                            <li>第二组：A2问B2答，B2问A2答</li>
+                            <li>倒计时30秒时红色警告</li>
+                            <li>时间结束有提示音</li>
+                        </ul>
+                    </div>
+                    <div class="rule-item">
+                        <h4>多窗口使用</h4>
+                        <ul>
+                            <li>可为A/B选手开启独立窗口</li>
+                            <li>支持自动窗口排列</li>
+                            <li>每个窗口独立计时</li>
+                            <li>使用菜单或快捷键操作</li>
+                        </ul>
+                    </div>
+                    <div class="rule-item">
+                        <h4>谈心谈话</h4>
+                        <ul>
+                            <li>第一阶段：4分钟谈话</li>
+                            <li>第二阶段：2分钟总结</li>
+                            <li>中间需要手动切换</li>
                         </ul>
                     </div>
                 </div>
-                <div class="rule-notes">
-                    <p><strong>注意事项：</strong></p>
-                    <ul>
-                        <li>每个阶段总时间为6分钟</li>
-                        <li>时间用完会播放提示音</li>
-                        <li>可以随时暂停和切换发言者</li>
-                    </ul>
+            </div>
+        </div>
+
+        <!-- 快捷键说明 -->
+        <div class="shortcuts-section">
+            <h3>快捷键</h3>
+            <div class="shortcuts-grid">
+                <div class="shortcut-item">
+                    <span class="key">Ctrl+1</span>
+                    <span class="action">开启A选手窗口</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="key">Ctrl+2</span>
+                    <span class="action">开启B选手窗口</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="key">Ctrl+3</span>
+                    <span class="action">开启谈心谈话窗口</span>
+                </div>
+                <div class="shortcut-item">
+                    <span class="key">Ctrl+Shift+B</span>
+                    <span class="action">同时开启A/B窗口</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 音频元素 -->
-    <audio id="timeUpSound" preload="auto">
-        <source
-            src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmIbBTuZ4Oy+cyQGl"
-            ) preload="auto">
-    </audio>
+    <script>
+        function openMode(mode) {
+            // 在当前窗口中导航
+            if (mode === 'player-a') {
+                window.location.href = 'player-a.html';
+            } else if (mode === 'player-b') {
+                window.location.href = 'player-b.html';
+            } else if (mode === 'interview') {
+                window.location.href = 'interview.html';
+            }
+        }
 
-    <script src="./renderer.js"></script>
+        function openNewWindow(mode) {
+            // 在新窗口中打开
+            if (window.electronAPI) {
+                if (mode === 'player-a') {
+                    window.electronAPI.openPlayerAWindow();
+                } else if (mode === 'player-b') {
+                    window.electronAPI.openPlayerBWindow();
+                } else if (mode === 'interview') {
+                    window.electronAPI.openInterviewWindow();
+                }
+            } else {
+                // fallback for web browser
+                alert('此功能需要在Electron应用中使用');
+            }
+        }
+
+        function openBothWindows() {
+            if (window.electronAPI) {
+                window.electronAPI.openBothPlayerWindows();
+            } else {
+                alert('此功能需要在Electron应用中使用');
+            }
+        }
+
+        function toggleRules() {
+            const rulesContent = document.getElementById('rulesContent');
+            const rulesToggle = document.querySelector('.rules-toggle');
+
+            rulesContent.classList.toggle('hidden');
+            rulesToggle.textContent = rulesContent.classList.contains('hidden')
+                ? '查看规则 ▼' : '收起规则 ▲';
+        }
+    </script>
 </body>
 
 </html>

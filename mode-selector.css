@@ -1,0 +1,358 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #1a2980 0%, #26d0ce 100%);
+    min-height: 100vh;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2vh 2vw;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    gap: 3vh;
+    align-items: center;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 4vh;
+}
+
+.header h1 {
+    font-size: 4em;
+    margin-bottom: 1vh;
+    font-weight: 500;
+    color: #ffffff;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.header p {
+    font-size: 1.4em;
+    opacity: 0.9;
+    font-weight: 300;
+}
+
+.mode-selector {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 3vw;
+    width: 100%;
+    max-width: 1000px;
+    margin: 2vh 0;
+}
+
+.mode-card {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 25px;
+    padding: 3vh 2vw;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.mode-card:hover {
+    transform: translateY(-8px);
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+}
+
+.mode-icon {
+    font-size: 4em;
+    margin-bottom: 2vh;
+}
+
+.mode-card h2 {
+    font-size: 2.2em;
+    margin-bottom: 1vh;
+    font-weight: 500;
+}
+
+.mode-card p {
+    font-size: 1.1em;
+    opacity: 0.9;
+    font-weight: 300;
+}
+
+.rules-section {
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 15px;
+    padding: 2vh;
+    width: 100%;
+    max-width: 800px;
+    margin-top: 3vh;
+}
+
+.rules-toggle {
+    width: 100%;
+    padding: 1.5vh 2vw;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-size: 1.1em;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.rules-toggle:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.rules-content {
+    margin-top: 2vh;
+    transition: all 0.3s ease;
+}
+
+.rules-content.hidden {
+    display: none;
+}
+
+.rules-content h3 {
+    font-size: 1.8em;
+    margin-bottom: 2vh;
+    text-align: center;
+    font-weight: 500;
+}
+
+.rules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2vh;
+    margin-bottom: 2vh;
+}
+
+.rule-item {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 2vh;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.rule-item h4 {
+    font-size: 1.3em;
+    margin-bottom: 1vh;
+    color: #ffffff;
+    font-weight: 500;
+}
+
+.rule-item ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.rule-item li {
+    margin-bottom: 0.8vh;
+    padding-left: 1.5em;
+    position: relative;
+    font-size: 0.95em;
+    opacity: 0.9;
+}
+
+.rule-item li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: #26d0ce;
+    font-weight: bold;
+}
+
+/* 多窗口控制区域 */
+.multi-window-section {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    padding: 3vh;
+    width: 100%;
+    max-width: 1200px;
+    margin: 3vh 0;
+    text-align: center;
+}
+
+.multi-window-section h2 {
+    font-size: 2.2em;
+    margin-bottom: 1vh;
+    font-weight: 500;
+    color: #ffffff;
+}
+
+.multi-window-section > p {
+    font-size: 1.2em;
+    opacity: 0.9;
+    margin-bottom: 3vh;
+}
+
+.multi-window-controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2vh;
+    margin-top: 2vh;
+}
+
+.window-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 2.5vh;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+.window-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.window-card.special {
+    background: linear-gradient(45deg, rgba(255, 193, 7, 0.2), rgba(255, 152, 0, 0.2));
+    border-color: rgba(255, 193, 7, 0.5);
+}
+
+.window-card.special:hover {
+    background: linear-gradient(45deg, rgba(255, 193, 7, 0.3), rgba(255, 152, 0, 0.3));
+    border-color: rgba(255, 193, 7, 0.7);
+}
+
+.window-icon {
+    font-size: 2.5em;
+    margin-bottom: 1vh;
+}
+
+.window-card h3 {
+    font-size: 1.3em;
+    margin-bottom: 1vh;
+    font-weight: 500;
+    color: #ffffff;
+}
+
+.window-card p {
+    font-size: 0.9em;
+    opacity: 0.9;
+    font-weight: 300;
+}
+
+/* 快捷键说明 */
+.shortcuts-section {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 15px;
+    padding: 2vh;
+    width: 100%;
+    max-width: 600px;
+    margin-top: 2vh;
+    text-align: center;
+}
+
+.shortcuts-section h3 {
+    font-size: 1.5em;
+    margin-bottom: 2vh;
+    font-weight: 500;
+    color: #ffffff;
+}
+
+.shortcuts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1vh;
+}
+
+.shortcut-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1vh;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.key {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 0.5vh 1vh;
+    border-radius: 6px;
+    font-family: monospace;
+    font-weight: bold;
+    font-size: 0.9em;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.action {
+    font-size: 0.9em;
+    opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: 3em;
+    }
+    
+    .mode-selector {
+        grid-template-columns: 1fr;
+        gap: 2vh;
+    }
+    
+    .mode-card {
+        padding: 3vh;
+    }
+    
+    .mode-card h2 {
+        font-size: 1.8em;
+    }
+    
+    .mode-icon {
+        font-size: 3em;
+    }
+
+    .multi-window-section h2 {
+        font-size: 1.8em;
+    }
+
+    .multi-window-controls {
+        grid-template-columns: 1fr;
+        gap: 1.5vh;
+    }
+
+    .window-card h3 {
+        font-size: 1.2em;
+    }
+
+    .shortcuts-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .header h1 {
+        font-size: 2.5em;
+    }
+    
+    .header p {
+        font-size: 1.2em;
+    }
+
+    .multi-window-section {
+        padding: 2vh;
+    }
+
+    .window-card {
+        padding: 2vh;
+    }
+} 

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'" />
+    <title>A选手计时器</title>
+    <link rel="stylesheet" href="player.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- 返回按钮 -->
+        <div class="back-button">
+            <button onclick="goBack()">← 返回主页</button>
+        </div>
+
+        <!-- 选手标识 -->
+        <div class="player-header">
+            <div class="player-badge">A</div>
+            <h1>A选手计时器</h1>
+        </div>
+
+        <!-- 当前状态 -->
+        <div class="status-display">
+            <div class="current-role" id="currentRole">等待开始</div>
+            <div class="phase-info" id="phaseInfo">准备就绪</div>
+        </div>
+
+        <!-- 主计时器 -->
+        <div class="main-timer-container" id="timerContainer">
+            <div class="timer-display" id="timerDisplay">04:00</div>
+            <div class="timer-info">
+                <div class="time-type" id="timeType">答题时间</div>
+                <div class="time-remaining" id="timeRemaining">剩余时间</div>
+            </div>
+        </div>
+
+        <!-- 控制按钮 -->
+        <div class="controls">
+            <button class="control-btn start-btn" id="startBtn">开始</button>
+            <button class="control-btn pause-btn" id="pauseBtn">暂停</button>
+            <button class="control-btn switch-btn" id="switchBtn" disabled>切换角色</button>
+            <button class="control-btn next-btn" id="nextBtn" disabled>下一环节</button>
+            <button class="control-btn reset-btn" id="resetBtn">重置</button>
+        </div>
+
+        <!-- 环节进度 -->
+        <div class="progress-section">
+            <div class="progress-item" id="round1">
+                <div class="round-number">1</div>
+                <div class="round-label">A1问B1答</div>
+            </div>
+            <div class="progress-line"></div>
+            <div class="progress-item" id="round2">
+                <div class="round-number">2</div>
+                <div class="round-label">B1问A1答</div>
+            </div>
+            <div class="progress-line"></div>
+            <div class="progress-item" id="round3">
+                <div class="round-number">3</div>
+                <div class="round-label">A2问B2答</div>
+            </div>
+            <div class="progress-line"></div>
+            <div class="progress-item" id="round4">
+                <div class="round-number">4</div>
+                <div class="round-label">B2问A2答</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 音频元素 -->
+    <audio id="warningSound" preload="auto">
+        <source
+            src="data:audio/wav;base64,UklGRu4CAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YcoCAAC4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4"
+            type="audio/wav">
+    </audio>
+    <audio id="endSound" preload="auto">
+        <source
+            src="data:audio/wav;base64,UklGRu4CAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YcoCAAC4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4"
+            type="audio/wav">
+    </audio>
+
+    <script src="player-timer.js"></script>
+    <script>
+        // 初始化A选手计时器
+        const playerTimer = new PlayerTimer('A');
+
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+
+</html>

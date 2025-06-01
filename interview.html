@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'" />
+    <title>谈心谈话计时器</title>
+    <link rel="stylesheet" href="interview.css">
+</head>
+
+<body>
+    <div class="container">
+        <!-- 返回按钮 -->
+        <div class="back-button">
+            <button onclick="goBack()">← 返回主页</button>
+        </div>
+
+        <!-- 模式标识 -->
+        <div class="interview-header">
+            <div class="interview-badge">👨‍🏫</div>
+            <h1>谈心谈话计时器</h1>
+        </div>
+
+        <!-- 当前阶段状态 -->
+        <div class="status-display">
+            <div class="current-phase" id="currentPhase">第一阶段：谈话环节</div>
+            <div class="phase-info" id="phaseInfo">准备开始</div>
+        </div>
+
+        <!-- 主计时器 -->
+        <div class="main-timer-container" id="timerContainer">
+            <div class="timer-display" id="timerDisplay">04:00</div>
+            <div class="timer-info">
+                <div class="time-type" id="timeType">谈话时间</div>
+                <div class="time-remaining" id="timeRemaining">剩余时间</div>
+            </div>
+        </div>
+
+        <!-- 控制按钮 -->
+        <div class="controls">
+            <button class="control-btn start-btn" id="startBtn">开始</button>
+            <button class="control-btn pause-btn" id="pauseBtn">暂停</button>
+            <button class="control-btn next-btn" id="nextBtn" disabled>下一阶段</button>
+            <button class="control-btn reset-btn" id="resetBtn">重置</button>
+        </div>
+
+        <!-- 阶段进度 -->
+        <div class="progress-section">
+            <div class="progress-item active" id="phase1">
+                <div class="phase-number">1</div>
+                <div class="phase-label">谈话环节</div>
+                <div class="phase-time">4分钟</div>
+            </div>
+            <div class="progress-line"></div>
+            <div class="progress-item" id="phase2">
+                <div class="phase-number">2</div>
+                <div class="phase-label">总结环节</div>
+                <div class="phase-time">2分钟</div>
+            </div>
+        </div>
+
+        <!-- 说明信息 -->
+        <div class="info-section">
+            <div class="info-card">
+                <h3>环节说明</h3>
+                <ul>
+                    <li>第一阶段：4分钟谈话环节</li>
+                    <li>第二阶段：2分钟总结环节</li>
+                    <li>阶段间需要手动切换</li>
+                    <li>倒计时30秒时会有警告提示</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- 音频元素 -->
+    <audio id="warningSound" preload="auto">
+        <source
+            src="data:audio/wav;base64,UklGRu4CAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YcoCAAC4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4"
+            type="audio/wav">
+    </audio>
+    <audio id="endSound" preload="auto">
+        <source
+            src="data:audio/wav;base64,UklGRu4CAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YcoCAAC4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4"
+            type="audio/wav">
+    </audio>
+
+    <script src="interview-timer.js"></script>
+    <script>
+        function goBack() {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+
+</html>
