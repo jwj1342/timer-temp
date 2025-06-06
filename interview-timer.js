@@ -124,15 +124,19 @@ class InterviewTimer {
             this.timeLeft--;
             this.updateDisplay();
             
-            // 30秒警告
+            // 30秒警告，持续5秒
             if (this.timeLeft === 30) {
                 this.playWarningSound();
                 this.elements.timerContainer.classList.add('warning');
             }
             
+            // 25秒时移除警告状态（30秒警告持续5秒）
+            if (this.timeLeft === 25) {
+                this.elements.timerContainer.classList.remove('warning');
+            }
+            
             // 10秒危险警告
             if (this.timeLeft === 10) {
-                this.elements.timerContainer.classList.remove('warning');
                 this.elements.timerContainer.classList.add('danger');
             }
             
@@ -294,8 +298,8 @@ class InterviewTimer {
         // 暂停按钮
         this.elements.pauseBtn.disabled = !this.isRunning;
         
-        // 下一阶段按钮
-        this.elements.nextBtn.disabled = this.isRunning || this.currentPhase >= 2 || !this.hasStarted || this.timeLeft > 0;
+        // 下一阶段按钮 - 允许在第一阶段任何时候切换到下一阶段
+        this.elements.nextBtn.disabled = this.isRunning || this.currentPhase >= 2 || !this.hasStarted;
         
         // 重置按钮始终可用
         this.elements.resetBtn.disabled = false;

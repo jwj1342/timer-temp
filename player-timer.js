@@ -158,15 +158,19 @@ class PlayerTimer {
             this.timeLeft--;
             this.updateDisplay();
             
-            // 30秒警告
+            // 30秒警告，持续5秒
             if (this.timeLeft === 30) {
                 this.playWarningSound();
                 this.elements.timerContainer.classList.add('warning');
             }
             
+            // 25秒时移除警告状态（30秒警告持续5秒）
+            if (this.timeLeft === 25) {
+                this.elements.timerContainer.classList.remove('warning');
+            }
+            
             // 10秒危险警告
             if (this.timeLeft === 10) {
-                this.elements.timerContainer.classList.remove('warning');
                 this.elements.timerContainer.classList.add('danger');
             }
             

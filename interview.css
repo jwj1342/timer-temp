@@ -131,7 +131,7 @@ body {
     border-width: 8px;
     background: rgba(239, 83, 80, 0.1);
     box-shadow: 0 0 40px rgba(239, 83, 80, 0.6);
-    animation: pulse-danger 0.5s infinite;
+    animation: pulse-danger 1s infinite;
 }
 
 @keyframes pulse-warning {
