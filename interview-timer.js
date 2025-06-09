@@ -73,7 +73,7 @@ class InterviewTimer {
                 oscillator.frequency.value = 800;
                 oscillator.type = 'sine';
                 
-                gainNode.gain.setValueAtTime(0.3, this.audioContext.currentTime);
+                gainNode.gain.setValueAtTime(0.5, this.audioContext.currentTime);
                 gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + 0.3);
                 
                 oscillator.start(this.audioContext.currentTime);
@@ -152,11 +152,6 @@ class InterviewTimer {
             // 10秒危险警告（所有阶段通用）
             if (this.timeLeft === 10) {
                 this.elements.timerContainer.classList.add('danger');
-            }
-            
-            // 倒计时最后10秒的滴滴声
-            if (this.timeLeft <= 10 && this.timeLeft > 0) {
-                this.playWarningSound();
             }
             
             // 时间结束
