@@ -10,12 +10,12 @@ class InterviewTimer {
         this.phases = {
             1: {
                 name: '谈话环节',
-                duration: 240, // 4分钟
+                duration: 360, // 6分钟
                 description: '第一阶段：谈话环节'
             },
             2: {
                 name: '总结环节',
-                duration: 120, // 2分钟
+                duration: 60, // 1分钟
                 description: '第二阶段：总结环节'
             }
         };
@@ -124,18 +124,32 @@ class InterviewTimer {
             this.timeLeft--;
             this.updateDisplay();
             
-            // 30秒警告，持续5秒
-            if (this.timeLeft === 30) {
-                this.playWarningSound();
-                this.elements.timerContainer.classList.add('warning');
+            // 根据当前阶段设置不同的警告时间
+            if (this.currentPhase === 1) {
+                // 谈话环节：1分钟警告，持续5秒
+                if (this.timeLeft === 60) {
+                    this.playWarningSound();
+                    this.elements.timerContainer.classList.add('warning');
+                }
+                
+                // 55秒时移除警告状态（1分钟警告持续5秒）
+                if (this.timeLeft === 55) {
+                    this.elements.timerContainer.classList.remove('warning');
+                }
+            } else {
+                // 总结环节：30秒警告，持续5秒
+                if (this.timeLeft === 30) {
+                    this.playWarningSound();
+                    this.elements.timerContainer.classList.add('warning');
+                }
+                
+                // 25秒时移除警告状态（30秒警告持续5秒）
+                if (this.timeLeft === 25) {
+                    this.elements.timerContainer.classList.remove('warning');
+                }
             }
             
-            // 25秒时移除警告状态（30秒警告持续5秒）
-            if (this.timeLeft === 25) {
-                this.elements.timerContainer.classList.remove('warning');
-            }
-            
-            // 10秒危险警告
+            // 10秒危险警告（所有阶段通用）
             if (this.timeLeft === 10) {
                 this.elements.timerContainer.classList.add('danger');
             }
